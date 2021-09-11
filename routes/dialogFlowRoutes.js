@@ -1,3 +1,9 @@
+const dialogflow = require('@google-cloud/dialogflow');
+const confiq = require('../confiq/keys');
+
+const sessionClient = new dialogflow.SessionsClient();
+const sessionPath = sessionClient.projectAgentSessionPath(confiq.googleProjectsID,confiq.dialogFlowSessionID);
+
 module.exports = app => {
 
     // root handler for landing page
@@ -7,9 +13,43 @@ module.exports = app => {
     });
     
     //sents queries to dialog flow
-    app.post('/api/df_text_query',(req, res) => {
-        res.send({'do':'text query'});   
-    });
+    app.post('/api/df_text_query', async (req, res) => {
+
+        // The text query request.
+        const request = {
+        session: sessionPath,
+        queryInput: {
+        text: {
+        // The query to send to the dialogflow agent
+        text: req.body.text,
+        // The language used by the client (en-US)
+        languageCode: confiq.dialogFlowSessionLanguageCode,
+      },
+    },
+  };
+       let responses =  await sessionClient
+            .detectIntent(request);
+            //.then(responses =>{
+
+            //     // Send request and log result
+            //     //const responses =  sessionClient.detectIntent(request);
+            //     console.log('Detected intent');
+            //     const result = responses[0].queryResult;
+            //     console.log(`  Query: ${result.queryText}`);
+            //     console.log(`  Response: ${result.fulfillmentText}`);
+            //     if (result.intent) {
+            //         console.log(`  Intent: ${result.intent.displayName}`);
+            //     } else {
+            //         console.log(`  No intent matched.`);
+            //     }
+            // })
+            // .catch(err =>{
+            //     console.log(' No intent matched');
+            // });
+        
+
+        res.send(responses[0].queryResult);   
+});
     
     //sents event to dialog flow
     app.post('/api/df_event_query',(req, res) => {
