@@ -3,7 +3,14 @@ const dialogflow = require('@google-cloud/dialogflow');
 const structjson = require('./structjson');
 const confiq = require('../confiq/keys');
 
-const sessionClient = new dialogflow.SessionsClient();
+const projectID = confiq.googleProjectsID;
+
+const credentials = {
+    client_email: confiq.googleClientEmail,
+    private_key: confiq.googlePrivateKey
+}
+
+const sessionClient = new dialogflow.SessionsClient({projectID: projectID, credentials: credentials});
 const sessionPath = sessionClient.projectAgentSessionPath(confiq.googleProjectsID,confiq.dialogFlowSessionID);
 
 
