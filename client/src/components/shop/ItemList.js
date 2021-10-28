@@ -2,7 +2,7 @@ import React from 'react';
 
 const ItemList = () =>  (
         <div>
-            Here goes the list of items.
+            Here goes the list of courses.
         </div>
 )
 
