@@ -8,8 +8,8 @@ const Header = () =>{
             <ul id="nav-mobile" className="right hide-on-med-and-down">
                 <li><Link to={'/'}>Home</Link></li>
                 <li><Link to={'/about'}>About us</Link></li>
-                <li><Link to={'/shop'}>Courses</Link></li>
-                <li><Link to={'/'}>Contact Us</Link></li>
+                <li><Link to={'/courses'}>Courses</Link></li>
+                <li><Link to={'/contact'}>Contact Us</Link></li>
             </ul>
             </div>
         </nav>
