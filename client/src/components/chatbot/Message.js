@@ -1,12 +1,13 @@
 import React from 'react';
 
 const Message = (props) => {
+    return(
     <div className="col s12 m8 offset-m2 offset-l3">
-        <div className="card-pnel grey lighten-5 z-depth-1">
+        <div className="card-panel grey lighten-5 z-depth-1">
             <div className="row valign-wrapper">
                 {props.speaks==='bot' &&
                 <div className="col s2">
-                    <button className="btn-floating btn large waves-effect waves-ight red">{props.speaks}</button>
+                    <a href="/" className="btn-floating btn-large waves-effect waves-light red">{props.speaks}</a>
                 </div>
                 }
 
@@ -18,13 +19,14 @@ const Message = (props) => {
 
                 {props.speaks==='me'&&
                     <div className="col s2">
-                       <button className="btn-floating btn large waves-effect waves-ight red">{props.speaks}</button>
+                       <a href="/" className="btn-floating btn-large waves-effect waves-light red">{props.speaks}</a>
                     </div>
                 }
             </div>
                 
         </div>
     </div>
+    );
 };
 
 export default Message;

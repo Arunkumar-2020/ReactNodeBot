@@ -1,9 +1,11 @@
-'use strict'
+'use strict';
 const dialogflow = require('@google-cloud/dialogflow');
 const structjson = require('./structjson');
 const confiq = require('../confiq/keys');
 
 const projectID = confiq.googleProjectsID;
+//const sessionId = confiq.dialogFlowSessionID;
+//const languageCode = config.dialogFlowSessionLanguageCode;
 
 const credentials = {
     client_email: confiq.googleClientEmail,
@@ -11,13 +13,16 @@ const credentials = {
 }
 
 const sessionClient = new dialogflow.SessionsClient({projectID: projectID, credentials: credentials});
-const sessionPath = sessionClient.projectAgentSessionPath(confiq.googleProjectsID,confiq.dialogFlowSessionID);
+//const sessionPath = sessionClient.projectAgentSessionPath(confiq.googleProjectsID,confiq.dialogFlowSessionID+userID);
+//the old session path declaration is is not valid so need to use this one and add the user id to it
+//also the userid should be added only inside the function where the userid is passed as an argument
 
 
 module.exports = {
-    textQuery: async function (text, parameters = {}) {
+    textQuery: async function (text, userID, parameters = {}) {
         // The text query request.
         let self = module.exports;
+        let sessionPath = sessionClient.projectAgentSessionPath(confiq.googleProjectsID,confiq.dialogFlowSessionID+userID);
         const request = {
             session: sessionPath,
             queryInput: {
@@ -40,9 +45,10 @@ module.exports = {
     
     },
     
-    eventQuery: async function (event, parameters = {}) {
+    eventQuery: async function (event,userID, parameters = {}) {
         // The text query request.
         let self = module.exports;
+        let sessionPath = sessionClient.projectAgentSessionPath(confiq.googleProjectsID,confiq.dialogFlowSessionID+userID);
         const request = {
             session: sessionPath,
             queryInput: {
