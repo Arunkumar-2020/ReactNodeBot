@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 import Message from './Message';
 import Card from './Card';
+import QuickReplies from './QuickReplies';
 
 const cookies = new Cookies();
 
@@ -17,6 +18,7 @@ class Chatbot extends Component{
         super(props);
 
         this._handleInputKeyPress = this._handleInputKeyPress.bind(this);
+        this._handleQuickReplyPayload = this._handleQuickReplyPayload.bind(this);
         this.state={
             messages: []
         };
@@ -38,6 +40,7 @@ class Chatbot extends Component{
         const res = await axios.post('/api/df_text_query', {text: querytext, userID: cookies.get('userID')});
         
         for(let msg of res.data.fulfillmentMessages){
+            console.log(JSON.stringify(msg))
             says = {
                 speaks: 'bot',
                 msg: msg
@@ -69,6 +72,18 @@ class Chatbot extends Component{
         //this.talkInput.focus();
         this.messagesEnd.scrollIntoView({behaviour:"smooth"});
     }
+    _handleQuickReplyPayload(event, payload, text) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        switch (payload) {
+            case 'training_masterclass':
+                this.df_event_query('MASTERCLASS');
+            default:
+                this.df_text_query(text);
+                break;
+        }
+    }
 
     renderCards(cards) {
         return cards.map((card, i) => <Card key={i} payload={card.structValue}/>);
@@ -94,6 +109,17 @@ class Chatbot extends Component{
                     </div>
                 </div>
             </div>
+            } else if (message.msg &&
+                message.msg.payload &&
+                message.msg.payload.fields &&
+                message.msg.payload.fields.quick_replies
+            ) {
+                return <QuickReplies
+                    text={message.msg.payload.fields.text ? message.msg.payload.fields.text : null}
+                    key={i}
+                    replyClick={this._handleQuickReplyPayload}
+                    speaks={message.speaks}
+                    payload={message.msg.payload.fields.quick_replies.listValue.values}/>;
         }
     }
 
@@ -120,15 +146,24 @@ class Chatbot extends Component{
     render()
     {
         return(
-        <div style ={{height:400,width:400,float:'right'}}>
-            <div id="chatbot" style={{height:'100%',width:'100%',overflow:'auto'}}>
-                <h2>Chatbot</h2>
+            <div style={{ minHeight: 500, maxHeight: 500, width:400, position: 'absolute', bottom: 0, right: 0, border: '1px solid lightgray'}}>
+            <nav>
+                <div className="nav-wrapper">
+                    <a href="/" className="brand-logo">ChatBot</a>
+                </div>
+            </nav>
+
+            <div id="chatbot"  style={{ minHeight: 388, maxHeight: 388, width:'100%', overflow: 'auto'}}>
+
                 {this.renderMessages(this.state.messages)}
                 <div ref ={(el) => { this.messagesEnd = el;}} style = {{float:'left',clear:'both'}}>
                 </div>
-                <input type="text" onKeyPress={this._handleInputKeyPress}/>
+               {/* <input type="text" onKeyPress={this._handleInputKeyPress}/> */}
+               <div className=" col s12" >
+                    <input style={{margin: 0, paddingLeft: '1%', paddingRight: '1%', width: '98%'}} ref={(input) => { this.talkInput = input; }} placeholder="type a message:"  onKeyPress={this._handleInputKeyPress} id="user_says" type="text" />
+                </div>
             </div>
-        </div>
+            </div>
         
         );
     } 
