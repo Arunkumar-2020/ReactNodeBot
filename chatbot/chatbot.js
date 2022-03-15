@@ -2,6 +2,7 @@
 const dialogflow = require('@google-cloud/dialogflow');
 const structjson = require('./structjson');
 const confiq = require('../confiq/keys');
+const mongoose = require('mongoose');
 
 const projectID = confiq.googleProjectsID;
 //const sessionId = confiq.dialogFlowSessionID;
@@ -16,7 +17,7 @@ const sessionClient = new dialogflow.SessionsClient({projectID: projectID, crede
 //const sessionPath = sessionClient.projectAgentSessionPath(confiq.googleProjectsID,confiq.dialogFlowSessionID+userID);
 //the old session path declaration is is not valid so need to use this one and add the user id to it
 //also the userid should be added only inside the function where the userid is passed as an argument
-
+const Registration = mongoose.model('registration');
 
 module.exports = {
     textQuery: async function (text, userID, parameters = {}) {
@@ -68,6 +69,34 @@ module.exports = {
     },
 
     handleAction: function(responses){
+        let self = module.exports;
+        let queryResult = responses[0].queryResult;
+
+        switch (queryResult.action) {
+            case 'recommendcourses-yes':
+                if (queryResult.allRequiredParamsPresent) {
+
+                    self.saveRegistration(queryResult.parameters.fields);
+                }
+                break;
+        }
+
         return responses;
+    },
+    
+    saveRegistration: async function(fields){
+        const registration = new Registration({
+            name: fields.name.stringValue,
+            address: fields.address.stringValue,
+            phone: fields.phone.stringValue,
+            email: fields.email.stringValue,
+            dateSent: Date.now()
+        });
+        try{
+            let reg = await registration.save();
+            console.log(reg);
+        } catch (err){
+            console.log(err);
+        }
     }
 }
