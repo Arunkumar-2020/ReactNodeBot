@@ -73,7 +73,7 @@ module.exports = {
         let queryResult = responses[0].queryResult;
 
         switch (queryResult.action) {
-            case 'recommendcourses-yes':
+            case 'Departments.Departments-yes':
                 if (queryResult.allRequiredParamsPresent) {
 
                     self.saveRegistration(queryResult.parameters.fields);
